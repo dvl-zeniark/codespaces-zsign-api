@@ -1,4 +1,4 @@
-import { getConfig } from "@/lib/config";
+import { getConfig } from "./config.ts";
 
 export class ZsignError extends Error {
   status: number;

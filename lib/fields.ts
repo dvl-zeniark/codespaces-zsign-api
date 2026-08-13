@@ -1,4 +1,4 @@
-import { zsign, zsignJson, ZsignError } from "@/lib/zsign";
+import { zsign, zsignJson, ZsignError } from "./zsign.ts";
 
 export type OfferField = {
   id: string;

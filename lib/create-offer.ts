@@ -1,11 +1,11 @@
-import { zsignJson, uploadDocument } from "@/lib/zsign";
+import { zsignJson, uploadDocument } from "./zsign.ts";
 import {
   getOffer,
   toOffer,
   MAX_RECIPIENTS,
   type Offer,
   type OfferRecipient,
-} from "@/lib/offers";
+} from "./offers.ts";
 
 export type RecipientInput = {
   firstName: string;

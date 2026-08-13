@@ -2,7 +2,7 @@
 
 Custom builder via External API - no embed iframes. Your server uploads the client's PDF, places fields, burn-previews, sends, and opens tab signing.
 
-Vite + a small Express BFF so StackBlitz compiles quickly. API keys stay in `.env` on the server.
+Vite (not Next.js) so StackBlitz/WebContainers do not hang on WASM SWC. API keys stay in `.env` on the server (`server/api.ts` via a Vite middleware plugin).
 
 ## Clone
 

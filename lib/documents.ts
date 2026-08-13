@@ -1,4 +1,4 @@
-import { zsignJson } from "@/lib/zsign";
+import { zsignJson } from "./zsign.ts";
 
 export type DocumentRow = {
   id: string;
