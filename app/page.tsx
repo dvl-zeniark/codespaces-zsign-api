@@ -1,12 +1,15 @@
+import { Suspense } from "react";
 import { AppShell } from "@/components/AppShell";
 import { ConnectionPanel } from "@/components/ConnectionPanel";
 import { ApiWorkspace } from "@/components/ApiWorkspace";
 
-export function App() {
+export default function Home() {
   return (
     <AppShell>
       <ConnectionPanel />
-      <ApiWorkspace />
+      <Suspense fallback={<p className="text-sm text-zinc-500">Loading...</p>}>
+        <ApiWorkspace />
+      </Suspense>
     </AppShell>
   );
 }

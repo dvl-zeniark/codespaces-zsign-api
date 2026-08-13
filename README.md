@@ -2,8 +2,6 @@
 
 Custom builder via External API - no embed iframes. Your server uploads the client's PDF, places fields, burn-previews, sends, and opens tab signing.
 
-Vite (not Next.js) so StackBlitz/WebContainers do not hang on WASM SWC. API keys stay in `.env` on the server (`server/api.ts` via a Vite middleware plugin).
-
 ## Clone
 
 Into the current directory (so `package.json` is at the project root, not in a nested folder):
@@ -26,6 +24,8 @@ ZSIGN_API_BASE=https://stg-zsign.zeniark.net
 npm install && npm run dev
 ```
 
+Next.js App Router (same runtime as StackBlitz's Next.js option). First compile in the browser uses WASM SWC; later reloads are faster.
+
 ## Use the app
 
 Upload a PDF, create draft + recipient, place fields, preview, send, `/sign/{token}`.
@@ -35,8 +35,8 @@ Upload a PDF, create draft + recipient, place fields, preview, send, `/sign/{tok
 | File | Role |
 |---|---|
 | `lib/zsign.ts` | BFF client + `uploadDocument` |
-| `server/api.ts` | Ping, documents, offers, webhooks |
 | `lib/create-offer.ts` | Document + request + recipient |
 | `lib/fields.ts` | POST/PATCH/DELETE fields |
 | `components/PdfBurnPreview.tsx` | GET preview PDF |
 | `components/ApiWorkspace.tsx` | Single-page builder UX |
+| `app/api/offers` | Multipart create (your PDF file) |

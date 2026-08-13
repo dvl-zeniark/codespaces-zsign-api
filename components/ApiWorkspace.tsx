@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
-import { replaceQuery, useSearchParams } from "@/lib/search-params";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/client";
@@ -105,6 +105,8 @@ const SECTIONS: { title: string; blurb: string; steps: StepDef[] }[] = [
 
 export function ApiWorkspace() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [surface, setSurface] = useState<Surface>("documents");
   const [requestId, setRequestId] = useState("");
   const [documentId, setDocumentId] = useState("");
@@ -142,17 +144,18 @@ export function ApiWorkspace() {
       if (nextRequestId !== undefined) setRequestId(nextRequestId);
       if (nextDocId !== undefined) setDocumentId(nextDocId);
 
-      replaceQuery((params) => {
-        params.set("surface", next);
-        const rid = nextRequestId !== undefined ? nextRequestId : undefined;
-        const did = nextDocId !== undefined ? nextDocId : undefined;
-        if (rid) params.set("requestId", rid);
-        else if (nextRequestId === "") params.delete("requestId");
-        if (did) params.set("documentId", did);
-        else if (nextDocId === "") params.delete("documentId");
-      });
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("surface", next);
+      const rid = nextRequestId !== undefined ? nextRequestId : undefined;
+      const did = nextDocId !== undefined ? nextDocId : undefined;
+      if (rid) params.set("requestId", rid);
+      else if (nextRequestId === "") params.delete("requestId");
+      if (did) params.set("documentId", did);
+      else if (nextDocId === "") params.delete("documentId");
+      const qs = params.toString();
+      router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
-    [],
+    [pathname, router, searchParams],
   );
 
   const urlSurface = searchParams.get("surface") || "";

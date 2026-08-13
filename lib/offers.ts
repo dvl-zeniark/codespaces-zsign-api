@@ -1,5 +1,5 @@
-import { zsignJson } from "./zsign.ts";
-import type { OfferField } from "./fields.ts";
+import { zsignJson } from "@/lib/zsign";
+import type { OfferField } from "@/lib/fields";
 
 export const MAX_RECIPIENTS = 20;
 
