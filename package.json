@@ -17,6 +17,9 @@
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.6.0"
   },
+  "overrides": {
+    "sharp": "0.0.0-disabled-unused-in-this-app"
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
