@@ -1,6 +1,14 @@
 # API quickstart - HTTP integration
 
-Custom builder via External API — no embed iframes. Your server uploads the client's PDF, places fields, burn-previews, sends, and opens tab signing.
+Custom builder via External API - no embed iframes. Your server uploads the client's PDF, places fields, burn-previews, sends, and opens tab signing.
+
+## Clone
+
+Into the current directory (so `package.json` is at the project root, not in a nested folder):
+
+```bash
+git clone https://github.com/dvl-zeniark/stackblitz-zsign-api.git .
+```
 
 ## `.env`
 
