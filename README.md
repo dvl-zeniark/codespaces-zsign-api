@@ -12,25 +12,21 @@ git clone https://github.com/dvl-zeniark/stackblitz-zsign-api.git .
 
 ## `.env`
 
-The repo ships an empty `.env`. Paste **your org** keys from ZSign Settings > Integrations.
+The repo ships an empty `.env`. Fill it with **your org** values from ZSign Settings > Integrations.
 
 ```
 ZSIGN_API_KEY=
 ZSIGN_WEBHOOK_SECRET=
+ZSIGN_API_BASE=
 ```
 
 ```bash
-# From workspace root (preferred)
-./dc.sh up
-./dc.sh logs -f partner-quickstart-api
-
-# Host-native
 npm install && npm run dev
 ```
 
 ## Use the app
 
-Compose service **`partner-quickstart-api`**. Upload a PDF, create draft + recipient, place fields, preview, send, `/sign/{token}`.
+Upload a PDF, create draft + recipient, place fields, preview, send, `/sign/{token}`.
 
 ## Read these
 
