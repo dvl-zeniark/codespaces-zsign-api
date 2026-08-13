@@ -12,7 +12,7 @@ git clone https://github.com/dvl-zeniark/stackblitz-zsign-api.git .
 
 ## `.env`
 
-Paste **your org** keys from ZSign Settings > Integrations. No bundled demo keys.
+The repo ships an empty `.env`. Paste **your org** keys from ZSign Settings > Integrations.
 
 ```
 ZSIGN_API_KEY=
