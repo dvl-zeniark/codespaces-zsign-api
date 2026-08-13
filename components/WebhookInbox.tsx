@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { api } from "@/lib/client";
-import { socket } from "@/lib/socket";
 
 type InboxRow = {
   type: string;
@@ -24,23 +23,11 @@ export function WebhookInbox() {
       }
     }
 
-    const onWebhook = (payload: { type?: string; at?: string }) => {
-      setRows((prev) => [
-        {
-          type: payload.type || "unknown",
-          at: payload.at || new Date().toISOString(),
-        },
-        ...prev.slice(0, 14),
-      ]);
-    };
-
     void tick();
     const id = setInterval(() => void tick(), 2000);
-    socket.on("webhook", onWebhook);
     return () => {
       stop = true;
       clearInterval(id);
-      socket.off("webhook", onWebhook);
     };
   }, []);
 

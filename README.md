@@ -24,6 +24,8 @@ ZSIGN_API_BASE=https://stg-zsign.zeniark.net
 npm install && npm run dev
 ```
 
+StackBlitz runs Next with WASM SWC (no native compiler). The first `Compiling /` can take a minute; later loads are faster.
+
 ## Use the app
 
 Upload a PDF, create draft + recipient, place fields, preview, send, `/sign/{token}`.

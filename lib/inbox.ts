@@ -1,5 +1,3 @@
-import { getIO } from "@/lib/socket-server";
-
 export type InboxEvent = {
   type: string;
   at: string;
@@ -30,7 +28,6 @@ export function recordWebhook(type: string): InboxEvent {
   const events = store();
   events.unshift(row);
   events.splice(MAX);
-  getIO()?.emit("webhook", row);
   return row;
 }
 

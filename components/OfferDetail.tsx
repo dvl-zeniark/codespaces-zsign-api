@@ -7,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PdfBurnPreview } from "@/components/PdfBurnPreview";
 import { api } from "@/lib/client";
-import { socket } from "@/lib/socket";
 import {
   MAX_RECIPIENTS,
   recipientLabel,
@@ -39,6 +38,7 @@ export function OfferDetail({ id }: { id: string }) {
   const q = useQuery({
     queryKey: ["offer", id],
     queryFn: () => api<{ offer: Offer }>(`/api/offers/${id}`),
+    refetchInterval: 2000,
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -51,16 +51,6 @@ export function OfferDetail({ id }: { id: string }) {
     email: "",
   });
   const [placedFields, setPlacedFields] = useState<OfferField[]>([]);
-
-  useEffect(() => {
-    const onWh = () => {
-      void q.refetch();
-    };
-    socket.on("webhook", onWh);
-    return () => {
-      socket.off("webhook", onWh);
-    };
-  }, [q]);
 
   const offer = q.data?.offer;
   const recipients = offer?.recipients ?? [];

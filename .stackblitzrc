@@ -1,4 +1,4 @@
 {
   "installDependencies": true,
-  "startCommand": "npm run dev"
+  "startCommand": "NEXT_TELEMETRY_DISABLED=1 npm run dev"
 }

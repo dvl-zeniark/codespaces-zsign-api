@@ -5,7 +5,6 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/client";
-import { socket } from "@/lib/socket";
 import { recipientLabel, type Offer } from "@/lib/offers";
 import type { DocumentRow } from "@/lib/documents";
 import { DocumentsPanel } from "@/components/DocumentsPanel";
@@ -118,21 +117,12 @@ export function ApiWorkspace() {
   const offersQ = useQuery({
     queryKey: ["offers"],
     queryFn: () => api<{ offers: Offer[] }>("/api/offers"),
+    refetchInterval: 2000,
   });
   const docsQ = useQuery({
     queryKey: ["documents"],
     queryFn: () => api<{ documents: DocumentRow[] }>("/api/documents"),
   });
-
-  useEffect(() => {
-    const onWh = () => {
-      void offersQ.refetch();
-    };
-    socket.on("webhook", onWh);
-    return () => {
-      socket.off("webhook", onWh);
-    };
-  }, [offersQ]);
 
   const offers = offersQ.data?.offers ?? [];
   const documents = docsQ.data?.documents ?? [];
