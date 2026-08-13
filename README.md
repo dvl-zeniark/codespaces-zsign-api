@@ -12,12 +12,12 @@ git clone https://github.com/dvl-zeniark/stackblitz-zsign-api.git .
 
 ## `.env`
 
-The repo ships an empty `.env`. Fill it with **your org** values from ZSign Settings > Integrations.
+Fill `.env` with **your org** keys from ZSign Settings > Integrations. API base is staging:
 
 ```
 ZSIGN_API_KEY=
 ZSIGN_WEBHOOK_SECRET=
-ZSIGN_API_BASE=
+ZSIGN_API_BASE=https://stg-zsign.zeniark.net
 ```
 
 ```bash

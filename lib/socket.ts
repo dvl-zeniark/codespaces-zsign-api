@@ -1,8 +1,19 @@
 "use client";
 
-import { io } from "socket.io-client";
+import { io, type Socket } from "socket.io-client";
 
-export const socket = io({
-  autoConnect: true,
-  path: "/socket.io",
-});
+function noopSocket(): Socket {
+  return {
+    on() {
+      return this;
+    },
+    off() {
+      return this;
+    },
+  } as unknown as Socket;
+}
+
+export const socket: Socket =
+  typeof window === "undefined"
+    ? noopSocket()
+    : io({ autoConnect: true, path: "/socket.io" });
