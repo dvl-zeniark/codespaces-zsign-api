@@ -49,8 +49,8 @@ export async function zsign(
   // The Idempotency-Key above makes retries safe for non-GET calls too.
   // Sandboxed network stacks (StackBlitz WebContainer's, for one) sometimes
   // reset a connection transiently, so retry harder than a single extra try.
-  const MAX_ATTEMPTS = 4;
-  const BACKOFF_MS = [300, 700, 1500];
+  const MAX_ATTEMPTS = 2;
+  const BACKOFF_MS = [300];
   let lastErr: unknown;
   for (let n = 1; n <= MAX_ATTEMPTS; n++) {
     try {
