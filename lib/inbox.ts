@@ -1,3 +1,5 @@
+import { emitUpdate } from "@/lib/events";
+
 export type InboxEvent = {
   type: string;
   at: string;
@@ -28,6 +30,7 @@ export function recordWebhook(type: string): InboxEvent {
   const events = store();
   events.unshift(row);
   events.splice(MAX);
+  emitUpdate(row.type);
   return row;
 }
 

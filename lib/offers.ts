@@ -85,10 +85,10 @@ export function toOffer(sr: SignatureRequest): Offer {
 }
 
 export async function listOffers(): Promise<Offer[]> {
-  const [drafts, rest] = await Promise.all([
-    zsignJson<ListResponse>("signature-requests?status=draft&limit=50"),
-    zsignJson<ListResponse>("signature-requests?limit=50"),
-  ]);
+  const drafts = await zsignJson<ListResponse>(
+    "signature-requests?status=draft&limit=50",
+  );
+  const rest = await zsignJson<ListResponse>("signature-requests?limit=50");
   const seen = new Set<string>();
   const rows: Offer[] = [];
   for (const sr of [...(drafts.data || []), ...(rest.data || [])]) {

@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/client";
 import { recipientLabel, type Offer } from "@/lib/offers";
 import type { DocumentRow } from "@/lib/documents";
+import { useLiveEvents } from "@/lib/use-live-events";
 import { DocumentsPanel } from "@/components/DocumentsPanel";
 import { RequestsPanel } from "@/components/RequestsPanel";
 import { ResumeDrafts } from "@/components/ResumeDrafts";
@@ -114,15 +115,24 @@ export function ApiWorkspace() {
   const [signError, setSignError] = useState("");
   const [signBusy, setSignBusy] = useState(false);
 
+  const queryClient = useQueryClient();
   const offersQ = useQuery({
     queryKey: ["offers"],
     queryFn: () => api<{ offers: Offer[] }>("/api/offers"),
-    refetchInterval: 2000,
+    // SSE (below) pushes real updates; this interval is just a fallback in
+    // case the stream drops, so it stays slow and stops entirely on error.
+    refetchInterval: (query) => (query.state.status === "error" ? false : 20000),
   });
   const docsQ = useQuery({
     queryKey: ["documents"],
     queryFn: () => api<{ documents: DocumentRow[] }>("/api/documents"),
   });
+  useLiveEvents(
+    useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["offers"] });
+      queryClient.invalidateQueries({ queryKey: ["documents"] });
+    }, [queryClient]),
+  );
 
   const offers = offersQ.data?.offers ?? [];
   const documents = docsQ.data?.documents ?? [];

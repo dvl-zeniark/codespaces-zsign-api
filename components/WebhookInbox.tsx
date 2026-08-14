@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/client";
+import { useLiveEvents } from "@/lib/use-live-events";
 
 type InboxRow = {
   type: string;
@@ -11,25 +12,20 @@ type InboxRow = {
 export function WebhookInbox() {
   const [rows, setRows] = useState<InboxRow[]>([]);
 
-  useEffect(() => {
-    let stop = false;
-
-    async function tick() {
-      try {
-        const data = await api<{ events: InboxRow[] }>("/api/webhooks/inbox");
-        if (!stop) setRows(data.events || []);
-      } catch {
-        /* keep last */
-      }
+  const refresh = useCallback(async () => {
+    try {
+      const data = await api<{ events: InboxRow[] }>("/api/webhooks/inbox");
+      setRows(data.events || []);
+    } catch {
+      /* keep last */
     }
-
-    void tick();
-    const id = setInterval(() => void tick(), 2000);
-    return () => {
-      stop = true;
-      clearInterval(id);
-    };
   }, []);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  useLiveEvents(refresh);
 
   return (
     <section className="rounded-xl border border-zinc-200 bg-white p-4">

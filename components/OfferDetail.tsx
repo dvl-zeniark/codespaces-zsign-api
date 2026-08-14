@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PdfBurnPreview } from "@/components/PdfBurnPreview";
 import { api } from "@/lib/client";
+import { useLiveEvents } from "@/lib/use-live-events";
 import {
   MAX_RECIPIENTS,
   recipientLabel,
@@ -35,11 +36,19 @@ const DEFAULT_FIELD = {
 };
 
 export function OfferDetail({ id }: { id: string }) {
+  const queryClient = useQueryClient();
   const q = useQuery({
     queryKey: ["offer", id],
     queryFn: () => api<{ offer: Offer }>(`/api/offers/${id}`),
-    refetchInterval: 2000,
+    // SSE (below) pushes real updates; this interval is just a fallback in
+    // case the stream drops, so it stays slow and stops entirely on error.
+    refetchInterval: (query) => (query.state.status === "error" ? false : 20000),
   });
+  useLiveEvents(
+    useCallback(() => {
+      queryClient.invalidateQueries({ queryKey: ["offer", id] });
+    }, [queryClient, id]),
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [fieldForm, setFieldForm] = useState(DEFAULT_FIELD);

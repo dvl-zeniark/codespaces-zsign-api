@@ -37,7 +37,13 @@ export async function zsign(
   if (!headers.has("Idempotency-Key") && init.method && init.method !== "GET") {
     headers.set("Idempotency-Key", crypto.randomUUID());
   }
-  return fetch(url, { ...init, headers });
+  // The Idempotency-Key above makes a single retry safe for non-GET calls too.
+  try {
+    return await fetch(url, { ...init, headers });
+  } catch {
+    await new Promise((r) => setTimeout(r, 400));
+    return fetch(url, { ...init, headers });
+  }
 }
 
 export async function zsignJson<T = unknown>(
