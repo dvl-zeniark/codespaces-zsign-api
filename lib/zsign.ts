@@ -10,6 +10,29 @@ export class ZsignError extends Error {
   }
 }
 
+// Circuit breaker: once a real network-level failure happens, stop attempting
+// fetch() entirely for a cooldown window instead of letting every fresh page
+// load / hot-reload / SSE-triggered refetch hit a known-broken connection.
+const BREAKER_COOLDOWN_MS = 15000;
+
+declare global {
+  var __zsignBreakerBrokenAt: number | undefined;
+}
+
+function breakerOpen(): number {
+  const brokenAt = globalThis.__zsignBreakerBrokenAt || 0;
+  const remaining = BREAKER_COOLDOWN_MS - (Date.now() - brokenAt);
+  return remaining > 0 ? remaining : 0;
+}
+
+function breakerTrip() {
+  globalThis.__zsignBreakerBrokenAt = Date.now();
+}
+
+function breakerReset() {
+  globalThis.__zsignBreakerBrokenAt = 0;
+}
+
 async function parseBody(res: Response): Promise<unknown> {
   const text = await res.text();
   if (!text) return null;
@@ -33,40 +56,34 @@ export async function zsign(
   }
   const url = `${apiBase}/api/v1/external/${path.replace(/^\/+/, "")}`;
   const method = init.method || "GET";
+
+  const cooldown = breakerOpen();
+  if (cooldown > 0) {
+    console.warn(
+      `[zsign] skipping ${method} ${url} - breaker open, ${Math.ceil(cooldown / 1000)}s left`,
+    );
+    throw new Error(
+      `ZSign API was unreachable ${Math.ceil((BREAKER_COOLDOWN_MS - cooldown) / 1000)}s ago; not retrying for ${Math.ceil(cooldown / 1000)}s`,
+    );
+  }
+
   const headers = new Headers(init.headers);
   headers.set("Authorization", `Bearer ${apiKey}`);
   if (!headers.has("Idempotency-Key") && init.method && init.method !== "GET") {
     headers.set("Idempotency-Key", crypto.randomUUID());
   }
 
-  const attempt = async () => {
-    console.log(`[zsign] -> ${method} ${url}`);
+  console.log(`[zsign] -> ${method} ${url}`);
+  try {
     const res = await fetch(url, { ...init, headers, cache: "no-store" });
     console.log(`[zsign] <- ${res.status} ${method} ${url}`);
+    breakerReset();
     return res;
-  };
-
-  // The Idempotency-Key above makes retries safe for non-GET calls too.
-  // Sandboxed network stacks (StackBlitz WebContainer's, for one) sometimes
-  // reset a connection transiently, so retry harder than a single extra try.
-  const MAX_ATTEMPTS = 2;
-  const BACKOFF_MS = [300];
-  let lastErr: unknown;
-  for (let n = 1; n <= MAX_ATTEMPTS; n++) {
-    try {
-      return await attempt();
-    } catch (err) {
-      lastErr = err;
-      console.error(
-        `[zsign] attempt ${n}/${MAX_ATTEMPTS} failed: ${method} ${url}`,
-        describeFetchError(err),
-      );
-      if (n < MAX_ATTEMPTS) {
-        await new Promise((r) => setTimeout(r, BACKOFF_MS[n - 1]));
-      }
-    }
+  } catch (err) {
+    console.error(`[zsign] fetch failed: ${method} ${url}`, describeFetchError(err));
+    breakerTrip();
+    throw err;
   }
-  throw lastErr;
 }
 
 /** Node's `TypeError: fetch failed` hides the real reason in `.cause` - surface it. */
