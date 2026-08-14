@@ -9,5 +9,9 @@ export function jsonError(err: unknown) {
     );
   }
   const message = err instanceof Error ? err.message : "Unexpected error";
-  return NextResponse.json({ message }, { status: 500 });
+  const cause = (err as { cause?: unknown } | undefined)?.cause;
+  return NextResponse.json(
+    { message, cause: cause ? String(cause) : undefined },
+    { status: 500 },
+  );
 }
