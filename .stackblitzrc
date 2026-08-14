@@ -1,0 +1,4 @@
+{
+  "installDependencies": true,
+  "startCommand": "cp -n .env.example .env.local; npm run dev"
+}

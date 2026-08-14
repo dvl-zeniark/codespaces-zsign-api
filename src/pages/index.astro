@@ -1,0 +1,119 @@
+---
+import "../styles/global.css";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>ZSign Astro quickstart</title>
+	</head>
+	<body>
+		<header>
+			<div class="bar">
+				<div>
+					<p class="title">ZSign Astro quickstart</p>
+					<p class="subtitle">Server-side external API · no iframe</p>
+				</div>
+				<p class="subtitle">
+					<code>src/lib/zsign.ts</code>
+					{" · "}
+					<code>src/pages/api/ping.ts</code>
+				</p>
+			</div>
+		</header>
+		<main>
+			<section class="panel">
+				<h2 class="panel-title">Connection</h2>
+				<p class="subtitle">
+					Paste <code>ZSIGN_API_KEY</code> in
+					<code>.env</code> (your org only). Never sent to
+					ZSign from the browser.
+				</p>
+				<dl class="fields">
+					<div>
+						<dt class="label">Ping</dt>
+						<dd id="ping-result">Checking...</dd>
+					</div>
+				</dl>
+			</section>
+		</main>
+
+		<script>
+			const el = document.getElementById("ping-result")!;
+			fetch("/api/ping")
+				.then(async (res) => {
+					const body = await res.json();
+					if (!res.ok) throw new Error(body.message || `HTTP ${res.status}`);
+					el.textContent = "API key works (GET /external/ping)";
+					el.classList.add("ok");
+				})
+				.catch((err: Error) => {
+					el.textContent = err.message;
+					el.classList.add("fail");
+				});
+		</script>
+
+		<style>
+			body {
+				min-height: 100vh;
+			}
+			header {
+				border-bottom: 1px solid #e4e4e7;
+				background: white;
+			}
+			.bar {
+				margin: 0 auto;
+				max-width: 1400px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 1rem;
+				padding: 0.75rem 1rem;
+			}
+			.title {
+				margin: 0;
+				font-size: 1.125rem;
+				font-weight: 600;
+				letter-spacing: -0.01em;
+			}
+			.subtitle {
+				margin: 0.25rem 0 0;
+				font-size: 0.75rem;
+				color: #71717a;
+			}
+			main {
+				margin: 0 auto;
+				max-width: 1400px;
+				padding: 1rem;
+			}
+			.panel {
+				border: 1px solid #e4e4e7;
+				background: white;
+				border-radius: 0.75rem;
+				padding: 1rem;
+			}
+			.panel-title {
+				margin: 0;
+				font-size: 0.875rem;
+				font-weight: 600;
+			}
+			.fields {
+				margin: 0.75rem 0 0;
+				font-size: 0.875rem;
+			}
+			.label {
+				font-size: 0.75rem;
+				font-weight: 500;
+				color: #71717a;
+			}
+			#ping-result.ok {
+				color: #15803d;
+			}
+			#ping-result.fail {
+				color: #dc2626;
+			}
+		</style>
+	</body>
+</html>
