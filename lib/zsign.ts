@@ -41,27 +41,32 @@ export async function zsign(
 
   const attempt = async () => {
     console.log(`[zsign] -> ${method} ${url}`);
-    const res = await fetch(url, { ...init, headers });
+    const res = await fetch(url, { ...init, headers, cache: "no-store" });
     console.log(`[zsign] <- ${res.status} ${method} ${url}`);
     return res;
   };
 
-  // The Idempotency-Key above makes a single retry safe for non-GET calls too.
-  try {
-    return await attempt();
-  } catch (err) {
-    console.error(`[zsign] fetch failed: ${method} ${url}`, describeFetchError(err));
-    await new Promise((r) => setTimeout(r, 400));
+  // The Idempotency-Key above makes retries safe for non-GET calls too.
+  // Sandboxed network stacks (StackBlitz WebContainer's, for one) sometimes
+  // reset a connection transiently, so retry harder than a single extra try.
+  const MAX_ATTEMPTS = 4;
+  const BACKOFF_MS = [300, 700, 1500];
+  let lastErr: unknown;
+  for (let n = 1; n <= MAX_ATTEMPTS; n++) {
     try {
       return await attempt();
-    } catch (retryErr) {
+    } catch (err) {
+      lastErr = err;
       console.error(
-        `[zsign] retry failed: ${method} ${url}`,
-        describeFetchError(retryErr),
+        `[zsign] attempt ${n}/${MAX_ATTEMPTS} failed: ${method} ${url}`,
+        describeFetchError(err),
       );
-      throw retryErr;
+      if (n < MAX_ATTEMPTS) {
+        await new Promise((r) => setTimeout(r, BACKOFF_MS[n - 1]));
+      }
     }
   }
+  throw lastErr;
 }
 
 /** Node's `TypeError: fetch failed` hides the real reason in `.cause` - surface it. */
