@@ -1,6 +1,6 @@
 "use client";
 
-import { recipientSummary, type Offer } from "@/lib/offers";
+import { recipientSummary, type Offer } from "@/lib/offers-shared";
 
 const STATUS: Record<string, string> = {
   draft: "Draft",

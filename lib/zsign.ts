@@ -14,6 +14,16 @@ const dispatcher = new Agent({
   keepAliveMaxTimeout: 1000,
 });
 
+/** One-shot, unpooled dispatcher for the stale-connection retry below. */
+function freshDispatcher(): Agent {
+  return new Agent({
+    keepAliveTimeout: 1000,
+    keepAliveMaxTimeout: 1000,
+    connections: 1,
+    pipelining: 0,
+  });
+}
+
 export class ZsignError extends Error {
   status: number;
   body: unknown;
@@ -87,13 +97,35 @@ export async function zsign(
     headers.set("Idempotency-Key", crypto.randomUUID());
   }
 
-  console.log(`[zsign] -> ${method} ${url}`);
-  try {
-    const res = (await undiciFetch(url, {
+  const attemptFetch = (d: Agent) =>
+    undiciFetch(url, {
       ...init,
       headers,
-      dispatcher,
-    } as Parameters<typeof undiciFetch>[1])) as unknown as Response;
+      dispatcher: d,
+    } as Parameters<typeof undiciFetch>[1]) as unknown as Promise<Response>;
+
+  console.log(`[zsign] -> ${method} ${url}`);
+  try {
+    let res: Response;
+    try {
+      res = await attemptFetch(dispatcher);
+    } catch (err) {
+      // The pooled keep-alive connection can be silently torn down by
+      // StackBlitz WebContainer's network proxy between requests; undici
+      // still tries to reuse it and surfaces "SocketError: other side
+      // closed". Retry once on a disposable, unpooled connection - this
+      // sidesteps a stale pooled socket without masking a genuinely broken
+      // network, which fails the retry too.
+      console.warn(
+        `[zsign] retrying once on a fresh connection: ${method} ${url} (${describeFetchError(err)})`,
+      );
+      const fresh = freshDispatcher();
+      try {
+        res = await attemptFetch(fresh);
+      } finally {
+        void fresh.close().catch(() => {});
+      }
+    }
     console.log(`[zsign] <- ${res.status} ${method} ${url}`);
     breakerReset();
     return res;

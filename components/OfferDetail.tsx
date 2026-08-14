@@ -13,7 +13,7 @@ import {
   recipientLabel,
   type Offer,
   type OfferRecipient,
-} from "@/lib/offers";
+} from "@/lib/offers-shared";
 import type { OfferField } from "@/lib/fields";
 
 const STATUS: Record<string, string> = {

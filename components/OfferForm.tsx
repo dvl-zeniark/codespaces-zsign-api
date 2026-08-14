@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/client";
-import { MAX_RECIPIENTS, type Offer } from "@/lib/offers";
+import { MAX_RECIPIENTS, type Offer } from "@/lib/offers-shared";
 import type { DocumentRow } from "@/lib/documents";
 
 type Props = {

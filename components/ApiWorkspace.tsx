@@ -5,7 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/client";
-import { recipientLabel, type Offer } from "@/lib/offers";
+import { recipientLabel, type Offer } from "@/lib/offers-shared";
 import type { DocumentRow } from "@/lib/documents";
 import { useLiveEvents } from "@/lib/use-live-events";
 import { DocumentsPanel } from "@/components/DocumentsPanel";
