@@ -1,4 +1,18 @@
+import { Agent, fetch as undiciFetch } from "undici";
 import { getConfig } from "@/lib/config";
+
+/**
+ * Node's global fetch (undici) pools keep-alive connections and can try to
+ * reuse one the server already silently closed, surfacing as
+ * "SocketError: other side closed" - a known undici race (nodejs/undici#3492,
+ * #3300, #2412), more likely to show up over StackBlitz WebContainer's
+ * network path. A short keepAliveTimeout makes the client discard pooled
+ * connections well before the server would, avoiding the race.
+ */
+const dispatcher = new Agent({
+  keepAliveTimeout: 1000,
+  keepAliveMaxTimeout: 1000,
+});
 
 export class ZsignError extends Error {
   status: number;
@@ -75,7 +89,11 @@ export async function zsign(
 
   console.log(`[zsign] -> ${method} ${url}`);
   try {
-    const res = await fetch(url, { ...init, headers, cache: "no-store" });
+    const res = (await undiciFetch(url, {
+      ...init,
+      headers,
+      dispatcher,
+    } as Parameters<typeof undiciFetch>[1])) as unknown as Response;
     console.log(`[zsign] <- ${res.status} ${method} ${url}`);
     breakerReset();
     return res;
