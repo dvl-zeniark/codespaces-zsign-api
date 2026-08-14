@@ -6,11 +6,11 @@ import { jsonError } from "@/lib/http";
 
 export const runtime = "nodejs";
 
-type Ctx = { params: Promise<{ id: string }> };
+type Ctx = { params: { id: string } };
 
 export async function POST(req: NextRequest, ctx: Ctx) {
   try {
-    const { id } = await ctx.params;
+    const { id } = ctx.params;
     const offer = await getOffer(id);
     let recipientId = "";
     try {

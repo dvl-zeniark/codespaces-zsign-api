@@ -1,10 +1,9 @@
 import { redirect } from "next/navigation";
 
-export default async function OfferPage({
+export default function OfferPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
-  redirect(`/?requestId=${id}`);
+  redirect(`/?requestId=${params.id}`);
 }

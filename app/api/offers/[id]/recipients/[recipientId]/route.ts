@@ -5,11 +5,11 @@ import { jsonError } from "@/lib/http";
 
 export const runtime = "nodejs";
 
-type Ctx = { params: Promise<{ id: string; recipientId: string }> };
+type Ctx = { params: { id: string; recipientId: string } };
 
 export async function DELETE(_req: Request, ctx: Ctx) {
   try {
-    const { id, recipientId } = await ctx.params;
+    const { id, recipientId } = ctx.params;
     await removeRecipient(id, recipientId);
     return NextResponse.json({ offer: await getOffer(id) });
   } catch (err) {

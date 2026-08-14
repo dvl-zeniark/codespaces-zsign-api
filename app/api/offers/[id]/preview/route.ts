@@ -4,11 +4,11 @@ import { jsonError } from "@/lib/http";
 
 export const runtime = "nodejs";
 
-type Ctx = { params: Promise<{ id: string }> };
+type Ctx = { params: { id: string } };
 
 export async function GET(_req: Request, ctx: Ctx) {
   try {
-    const { id } = await ctx.params;
+    const { id } = ctx.params;
     const blob = await zsignPdf(`signature-requests/${id}/preview`);
     const buf = Buffer.from(await blob.arrayBuffer());
     return new NextResponse(buf, {

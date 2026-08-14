@@ -4,11 +4,11 @@ import { jsonError } from "@/lib/http";
 
 export const runtime = "nodejs";
 
-type Ctx = { params: Promise<{ id: string; fieldId: string }> };
+type Ctx = { params: { id: string; fieldId: string } };
 
 export async function PATCH(req: NextRequest, ctx: Ctx) {
   try {
-    const { id, fieldId } = await ctx.params;
+    const { id, fieldId } = ctx.params;
     const body = (await req.json()) as Partial<FieldPlacementInput>;
     const field = await updateField(id, fieldId, body);
     return NextResponse.json({ field });
@@ -19,7 +19,7 @@ export async function PATCH(req: NextRequest, ctx: Ctx) {
 
 export async function DELETE(_req: Request, ctx: Ctx) {
   try {
-    const { id, fieldId } = await ctx.params;
+    const { id, fieldId } = ctx.params;
     await deleteField(id, fieldId);
     return new NextResponse(null, { status: 204 });
   } catch (err) {
