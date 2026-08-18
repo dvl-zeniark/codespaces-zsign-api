@@ -1,7 +1,10 @@
 {
   "name": "zsign-api-quickstart",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
-  "postCreateCommand": "npm install && cp -n .env.example .env.local || true",
+  "hostRequirements": {
+    "cpus": 4
+  },
+  "postCreateCommand": "npm ci && cp -n .env.example .env.local || true",
   "postAttachCommand": {
     "dev": "npm run dev"
   },
