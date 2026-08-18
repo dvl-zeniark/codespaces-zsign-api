@@ -1,6 +1,6 @@
 ---
 import "../styles/global.css";
-import { PingCheck } from "../components/PingCheck";
+import { ApiApp } from "../components/ApiApp";
 ---
 
 <html lang="en">
@@ -8,24 +8,9 @@ import { PingCheck } from "../components/PingCheck";
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>ZSign Astro quickstart</title>
+		<title>ZSign API quickstart</title>
 	</head>
-	<body class="min-h-screen bg-zinc-100 text-zinc-950">
-		<header class="border-b border-zinc-200 bg-white">
-			<div class="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-				<div>
-					<p class="text-lg font-semibold tracking-tight">ZSign Astro quickstart</p>
-					<p class="mt-1 text-xs text-zinc-500">Server-side external API - no iframe</p>
-				</div>
-				<p class="text-xs text-zinc-500">
-					<code>src/lib/zsign.ts</code>
-					{" · "}
-					<code>src/pages/api/ping.ts</code>
-				</p>
-			</div>
-		</header>
-		<main class="mx-auto max-w-5xl p-4">
-			<PingCheck client:load />
-		</main>
+	<body>
+		<ApiApp client:load />
 	</body>
 </html>

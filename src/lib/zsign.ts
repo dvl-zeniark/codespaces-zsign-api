@@ -29,6 +29,9 @@ export async function zsign(
   const url = `${apiBase}/api/v1/external/${path.replace(/^\/+/, "")}`;
   const headers = new Headers(init.headers);
   headers.set("Authorization", `Bearer ${apiKey}`);
+  if (!headers.has("Idempotency-Key") && init.method && init.method !== "GET") {
+    headers.set("Idempotency-Key", crypto.randomUUID());
+  }
 
   return fetch(url, { ...init, headers });
 }
@@ -41,4 +44,20 @@ export async function zsignJson<T = unknown>(
   const body = await parseBody(res);
   if (!res.ok) throw new ZsignError(res.status, body);
   return body as T;
+}
+
+export async function zsignPdf(path: string): Promise<Blob> {
+  const res = await zsign(path);
+  if (!res.ok) throw new ZsignError(res.status, await parseBody(res));
+  return res.blob();
+}
+
+export async function uploadDocument(bytes: Uint8Array | Buffer, filename: string) {
+  const form = new FormData();
+  form.append(
+    "file",
+    new Blob([Buffer.from(bytes)], { type: "application/pdf" }),
+    filename,
+  );
+  return zsignJson<{ id: string }>("documents", { method: "POST", body: form });
 }
