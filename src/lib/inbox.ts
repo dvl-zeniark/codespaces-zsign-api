@@ -1,4 +1,5 @@
 import { emitUpdate } from "@/lib/events";
+import { readEnvLocal } from "@/lib/config";
 
 export type InboxEvent = {
   type: string;
@@ -19,7 +20,8 @@ function store(): InboxEvent[] {
 }
 
 export function getWebhookSecret(): string {
-  return (process.env.ZSIGN_WEBHOOK_SECRET || "").trim();
+  const fileEnv = readEnvLocal();
+  return (fileEnv.ZSIGN_WEBHOOK_SECRET || import.meta.env.ZSIGN_WEBHOOK_SECRET || "").trim();
 }
 
 export function recordWebhook(type: string): InboxEvent {

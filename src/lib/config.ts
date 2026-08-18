@@ -11,7 +11,7 @@ const STAGING_API = "https://stg-zsign.zeniark.net";
  * the file on every call avoids that: a saved edit takes effect on the
  * next request.
  */
-function readEnvLocal(): Record<string, string> {
+export function readEnvLocal(): Record<string, string> {
   try {
     return parse(readFileSync(join(process.cwd(), ".env.local"), "utf8"));
   } catch {
