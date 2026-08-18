@@ -1,5 +1,9 @@
 import { getConfig } from "./config";
 
+// Every ZSign API call in this app funnels through zsign()/zsignJson()/zsignPdf()
+// below. See README.md "Where the actual API calls happen" for the full map of
+// which lib/ file calls which endpoint.
+
 export class ZsignError extends Error {
   status: number;
   body: unknown;
