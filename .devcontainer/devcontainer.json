@@ -1,22 +1,20 @@
 {
   "name": "zsign-api-quickstart",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "appPort": [4321],
   "forwardPorts": [4321],
   "portsAttributes": {
     "4321": {
       "label": "Astro",
-      "onAutoForward": "openPreview",
-      "visibility": "public"
+      "onAutoForward": "openPreview"
     }
   },
   "otherPortsAttributes": {
-    "onAutoForward": "openPreview",
-    "visibility": "public"
+    "onAutoForward": "openPreview"
   },
   "postCreateCommand": "npm install && cp -n .env.example .env.local || true",
-  "postStartCommand": "bash .devcontainer/publish-port.sh",
   "postAttachCommand": {
     "readme": "code README.md",
-    "dev": "npm run dev"
+    "dev": "npm run dev -- --host 0.0.0.0 --port 4321"
   }
 }
