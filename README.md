@@ -59,8 +59,17 @@ Keys never go in the browser — only `pages/api/*` and `lib/*` call ZSign.
 
 ## Webhooks
 
-Register `POST /api/webhooks/zsign` in **ZSign → Settings → Integrations → Webhooks**.
+Register the webhook URL in **ZSign → Settings → Integrations → Webhooks**.
 Paste the signing secret into `.env.local` as `ZSIGN_WEBHOOK_SECRET`.
+
+The **Webhooks** page (`/webhooks`) shows the full endpoint URL for this running instance
+(derived from the request origin). Relative path: `POST /api/webhooks/zsign`.
+
+**Codespaces:** the app runs on port **4321** (`appPort` in `.devcontainer/devcontainer.json`).
+ZSign must reach a **public** URL — in the Codespaces **Ports** tab, set port **4321** visibility
+to **Public** (manual step; no `gh` CLI automation in the devcontainer).
+
+**Local `./dc.sh`:** use `http://localhost:5001/api/webhooks/zsign` for this API quickstart sample.
 
 - [`src/pages/api/webhooks/zsign.ts`](src/pages/api/webhooks/zsign.ts) — verify HMAC, push to in-memory inbox
 - [`src/pages/webhooks.astro`](src/pages/webhooks.astro) — read-only delivery list (no Connection panel, no key form)

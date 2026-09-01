@@ -15,8 +15,10 @@ import AppLayout from "../layouts/AppLayout.astro";
         Paste your integration key in <code class="text-xs">.env.local</code> as
         <code class="text-xs">ZSIGN_API_KEY</code> (see <code class="text-xs">.env.example</code>).
         For webhooks, add <code class="text-xs">ZSIGN_WEBHOOK_SECRET</code> from Integrations.
-        There is no key field in this UI — the server reads env on every request via
-        <code class="text-xs">src/lib/config.ts</code>.
+        The full endpoint URL to register in ZSign is on the
+        <a href="/webhooks" class="font-medium underline">Webhooks</a> page (not returned in API
+        JSON responses). There is no key field in this UI — the server reads env on every request
+        via <code class="text-xs">src/lib/config.ts</code>.
       </p>
     </div>
 
