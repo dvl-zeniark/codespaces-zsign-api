@@ -1,0 +1,23 @@
+---
+import AppLayout from "../../../layouts/AppLayout.astro";
+import { SendForm } from "../../../components/SendForm";
+
+export const prerender = false;
+
+const { id } = Astro.params;
+---
+
+<AppLayout title="Send">
+  <div class="space-y-3">
+    {id ? (
+      <>
+        <p class="text-sm text-zinc-600">
+          <a href={`/signature-requests/${id}`} class="underline hover:text-zinc-900">Back to signature request</a>
+        </p>
+        <SendForm client:load requestId={id} />
+      </>
+    ) : (
+      <p class="text-sm text-red-600">Missing signature request id</p>
+    )}
+  </div>
+</AppLayout>

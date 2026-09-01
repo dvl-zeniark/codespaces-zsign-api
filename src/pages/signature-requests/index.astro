@@ -1,0 +1,66 @@
+---
+import AppLayout from "../../layouts/AppLayout.astro";
+import { listOffers } from "@/lib/offers";
+import { recipientSummary } from "@/lib/offers-shared";
+
+export const prerender = false;
+
+const STATUS: Record<string, string> = {
+  draft: "Draft",
+  pending: "Sent",
+  completed: "Completed",
+  declined: "Declined",
+  canceled: "Canceled",
+  expired: "Expired",
+};
+
+let offers = [];
+let loadError = "";
+
+try {
+  offers = await listOffers();
+} catch (e) {
+  loadError = e instanceof Error ? e.message : String(e);
+}
+---
+
+<AppLayout title="Signature requests">
+  <div class="space-y-4">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <p class="text-sm text-zinc-600">
+        Server: <code class="text-xs">listOffers()</code> in
+        <code class="text-xs">lib/offers.ts</code>
+      </p>
+      <a
+        href="/signature-requests/new"
+        class="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white no-underline hover:bg-zinc-800"
+      >
+        New signature request
+      </a>
+    </div>
+
+    {loadError ? (
+      <p class="text-sm text-red-600">{loadError}</p>
+    ) : offers.length === 0 ? (
+      <p class="text-sm text-zinc-500">No signature requests yet.</p>
+    ) : (
+      <ul class="divide-y divide-zinc-100 overflow-hidden rounded-lg border border-zinc-200 bg-white">
+        {offers.map((offer) => (
+          <li>
+            <a
+              href={`/signature-requests/${offer.id}`}
+              class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm no-underline hover:bg-zinc-50"
+            >
+              <span class="min-w-0 font-medium text-zinc-900">{offer.title}</span>
+              <span class="shrink-0 text-zinc-500">
+                {STATUS[offer.status] || offer.status}
+                {" · "}
+                {recipientSummary(offer)}
+              </span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</AppLayout>

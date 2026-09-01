@@ -1,0 +1,53 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import { listWebhooks } from "../lib/inbox";
+
+const events = listWebhooks();
+---
+
+<AppLayout title="Webhooks">
+  <div class="space-y-4">
+    <p class="text-sm text-zinc-600">
+      Read-only inbox for verified deliveries to
+      <code class="text-xs">POST /api/webhooks/zsign</code>. Register that URL in
+      <strong>ZSign &gt; Settings &gt; Integrations &gt; Webhooks</strong> and paste the signing
+      secret in <code class="text-xs">.env.local</code> as
+      <code class="text-xs">ZSIGN_WEBHOOK_SECRET</code>.
+    </p>
+
+    {
+      events.length === 0 ? (
+        <p class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-4 text-sm text-zinc-500">
+          No events yet. Send a test delivery from Integrations or complete a signature request.
+        </p>
+      ) : (
+        <div class="overflow-hidden rounded-lg border border-zinc-200 bg-white">
+          <table class="w-full text-left text-sm">
+            <thead class="border-b border-zinc-200 bg-zinc-50 text-xs uppercase tracking-wide text-zinc-500">
+              <tr>
+                <th class="px-4 py-2 font-medium">Event</th>
+                <th class="px-4 py-2 font-medium">Delivery id</th>
+                <th class="px-4 py-2 font-medium">Received</th>
+                <th class="px-4 py-2 font-medium">Payload</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                events.map((row) => (
+                  <tr class="border-b border-zinc-100 last:border-0">
+                    <td class="px-4 py-2 font-medium text-zinc-900">{row.type}</td>
+                    <td class="px-4 py-2 font-mono text-xs text-zinc-600">{row.id}</td>
+                    <td class="px-4 py-2 text-xs text-zinc-500">{row.receivedAt}</td>
+                    <td class="px-4 py-2 font-mono text-xs text-zinc-600">
+                      {row.payloadSummary || "—"}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+      )
+    }
+  </div>
+</AppLayout>

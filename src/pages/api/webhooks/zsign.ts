@@ -20,7 +20,18 @@ export const POST: APIRoute = async ({ request }) => {
     );
   }
 
-  recordWebhook(request.headers.get("x-zsign-event") || "unknown");
+  const eventType =
+    request.headers.get("x-zsign-event") ||
+    (() => {
+      try {
+        const body = JSON.parse(rawBody) as { type?: string };
+        return body.type ?? "unknown";
+      } catch {
+        return "unknown";
+      }
+    })();
+
+  recordWebhook(eventType, rawBody);
   return new Response(JSON.stringify({ received: true, verified: true }), {
     status: 200,
     headers: { "Content-Type": "application/json" },

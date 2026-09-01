@@ -1,0 +1,15 @@
+---
+import AppLayout from "../layouts/AppLayout.astro";
+import { UploadForm } from "../components/UploadForm";
+---
+
+<AppLayout title="Documents">
+  <div class="space-y-3">
+    <p class="text-sm text-zinc-600">
+      Server routes:
+      <code class="text-xs">GET/POST /api/documents</code> → ZSign external
+      <code class="text-xs">documents</code>
+    </p>
+    <UploadForm client:load />
+  </div>
+</AppLayout>

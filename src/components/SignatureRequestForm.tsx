@@ -2,15 +2,12 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/client";
+import { fetchJson } from "@/lib/fetch-json";
 import { MAX_RECIPIENTS, type Offer } from "@/lib/offers-shared";
 import type { DocumentRow } from "@/lib/documents";
 
 type Props = {
-  documentId: string;
-  documents: DocumentRow[];
-  onDocumentId: (id: string) => void;
-  onCreated: (id: string) => void;
+  initialDocumentId?: string;
 };
 
 type RecipientRow = {
@@ -23,18 +20,25 @@ type RequestMode = "single" | "bulk";
 
 const EMPTY_ROW: RecipientRow = { firstName: "", lastName: "", email: "" };
 
-export function OfferForm({
-  documentId,
-  documents,
-  onDocumentId,
-  onCreated,
-}: Props) {
+export function SignatureRequestForm({ initialDocumentId = "" }: Props) {
+  const [documents, setDocuments] = useState<DocumentRow[]>([]);
+  const [documentId, setDocumentId] = useState(initialDocumentId);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [mode, setMode] = useState<RequestMode>("single");
   const [title, setTitle] = useState("");
   const [recipients, setRecipients] = useState<RecipientRow[]>([{ ...EMPTY_ROW }]);
   const selected = documents.find((d) => d.id === documentId) || null;
+
+  useEffect(() => {
+    void fetchJson<{ documents: DocumentRow[] }>("/api/documents")
+      .then((data) => setDocuments(data.documents))
+      .catch((err) => setError((err as Error).message));
+  }, []);
+
+  useEffect(() => {
+    if (initialDocumentId) setDocumentId(initialDocumentId);
+  }, [initialDocumentId]);
 
   useEffect(() => {
     if (!selected?.name) return;
@@ -81,7 +85,7 @@ export function OfferForm({
     setBusy(true);
     setError("");
     try {
-      const { offer } = await api<{ offer: Offer }>("/api/offers", {
+      const { offer } = await fetchJson<{ offer: Offer }>("/api/signature-requests", {
         method: "POST",
         body: JSON.stringify({
           roleTitle: title.trim(),
@@ -90,7 +94,7 @@ export function OfferForm({
           isBulk: mode === "bulk",
         }),
       });
-      onCreated(offer.id);
+      window.location.href = `/signature-requests/${offer.id}`;
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -152,7 +156,7 @@ export function OfferForm({
           id="docid"
           className="h-10 w-full rounded-lg border border-zinc-200 px-3 text-sm"
           value={documentId}
-          onChange={(e) => onDocumentId(e.target.value)}
+          onChange={(e) => setDocumentId(e.target.value)}
           required
         >
           <option value="">Select document...</option>

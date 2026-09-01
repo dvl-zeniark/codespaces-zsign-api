@@ -1,23 +1,32 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/client";
+import { fetchJson } from "@/lib/fetch-json";
 import type { DocumentRow } from "@/lib/documents";
 
-type Props = {
-  onPick?: (id: string) => void;
-};
-
-export function DocumentsPanel({ onPick }: Props) {
-  const q = useQuery({
-    queryKey: ["documents"],
-    queryFn: () => api<{ documents: DocumentRow[] }>("/api/documents"),
-  });
+export function UploadForm() {
+  const [rows, setRows] = useState<DocumentRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+
+  async function load() {
+    setLoading(true);
+    try {
+      const data = await fetchJson<{ documents: DocumentRow[] }>("/api/documents");
+      setRows(data.documents);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void load();
+  }, []);
 
   async function upload(e: React.FormEvent) {
     e.preventDefault();
@@ -30,17 +39,15 @@ export function DocumentsPanel({ onPick }: Props) {
     try {
       const body = new FormData();
       body.append("file", file);
-      await api("/api/documents", { method: "POST", body });
+      await fetchJson("/api/documents", { method: "POST", body });
       setFile(null);
-      await q.refetch();
+      await load();
     } catch (err) {
       setError((err as Error).message);
     } finally {
       setBusy(false);
     }
   }
-
-  const rows = q.data?.documents ?? [];
 
   return (
     <div className="space-y-4 rounded-xl border border-zinc-200 bg-white p-5">
@@ -51,7 +58,7 @@ export function DocumentsPanel({ onPick }: Props) {
         </p>
       </div>
       <form onSubmit={upload} className="flex flex-wrap items-end gap-3">
-        <div className="space-y-1 min-w-[220px] flex-1">
+        <div className="min-w-[220px] flex-1 space-y-1">
           <Label htmlFor="doc">Upload PDF</Label>
           <Input
             id="doc"
@@ -65,7 +72,7 @@ export function DocumentsPanel({ onPick }: Props) {
         </Button>
       </form>
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
-      {q.isLoading ? (
+      {loading ? (
         <p className="text-sm text-zinc-500">Loading documents...</p>
       ) : rows.length === 0 ? (
         <p className="text-sm text-zinc-500">No documents yet.</p>
@@ -73,16 +80,15 @@ export function DocumentsPanel({ onPick }: Props) {
         <ul className="divide-y divide-zinc-100 rounded-md border border-zinc-200">
           {rows.map((d) => (
             <li key={d.id}>
-              <button
-                type="button"
-                onClick={() => onPick?.(d.id)}
-                className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm hover:bg-zinc-50"
+              <a
+                href={`/signature-requests/new?documentId=${encodeURIComponent(d.id)}`}
+                className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm no-underline hover:bg-zinc-50"
               >
-                <span className="font-medium truncate">{d.name}</span>
-                <span className="font-mono text-[11px] text-zinc-500 shrink-0">
+                <span className="truncate font-medium">{d.name}</span>
+                <span className="shrink-0 font-mono text-[11px] text-zinc-500">
                   {d.id.slice(0, 8)}...
                 </span>
-              </button>
+              </a>
             </li>
           ))}
         </ul>

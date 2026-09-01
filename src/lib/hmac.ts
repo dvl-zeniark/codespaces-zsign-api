@@ -22,7 +22,7 @@ export function verifyZsignWebhook(opts: {
   const now = opts.nowSec ?? Math.floor(Date.now() / 1000);
 
   if (!secret) {
-    return { ok: false, error: "Set ZSIGN_WEBHOOK_SECRET in .env" };
+    return { ok: false, error: "Set ZSIGN_WEBHOOK_SECRET in .env.local" };
   }
   if (!signatureHeader) {
     return { ok: false, error: "Missing X-ZSign-Signature" };

@@ -1,16 +1,79 @@
 ---
-import "../styles/global.css";
-import { ApiApp } from "../components/ApiApp";
+import AppLayout from "../layouts/AppLayout.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>ZSign API quickstart</title>
-	</head>
-	<body>
-		<ApiApp client:load />
-	</body>
-</html>
+<AppLayout title="Dashboard">
+  <div class="space-y-6">
+    <p class="max-w-2xl text-sm text-zinc-600">
+      Each sidebar link is a real page. Upload a document, create a signature
+      request, place fields, then send.
+    </p>
+
+    <div class="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+      <p class="font-medium">Before you start</p>
+      <p class="mt-1 text-amber-900">
+        Paste your integration key in <code class="text-xs">.env.local</code> as
+        <code class="text-xs">ZSIGN_API_KEY</code> (see <code class="text-xs">.env.example</code>).
+        For webhooks, add <code class="text-xs">ZSIGN_WEBHOOK_SECRET</code> from Integrations.
+        There is no key field in this UI — the server reads env on every request via
+        <code class="text-xs">src/lib/config.ts</code>.
+      </p>
+    </div>
+
+    <div class="grid gap-3 sm:grid-cols-2">
+      <a
+        href="/documents"
+        class="rounded-lg border border-zinc-200 bg-white p-4 no-underline shadow-sm transition hover:border-zinc-300"
+      >
+        <p class="font-medium text-zinc-900">Documents</p>
+        <p class="mt-1 text-sm text-zinc-500">Upload and pick PDFs</p>
+        <p class="mt-2 text-xs text-zinc-400">
+          <code>pages/documents.astro</code> → <code>api/documents.ts</code>
+        </p>
+      </a>
+
+      <a
+        href="/signature-requests"
+        class="rounded-lg border border-zinc-200 bg-white p-4 no-underline shadow-sm transition hover:border-zinc-300"
+      >
+        <p class="font-medium text-zinc-900">Signature requests</p>
+        <p class="mt-1 text-sm text-zinc-500">Signature request list</p>
+        <p class="mt-2 text-xs text-zinc-400">
+          <code>pages/signature-requests/index.astro</code> → <code>lib/offers.ts</code>
+        </p>
+      </a>
+
+      <a
+        href="/signature-requests/new"
+        class="rounded-lg border border-zinc-200 bg-white p-4 no-underline shadow-sm transition hover:border-zinc-300"
+      >
+        <p class="font-medium text-zinc-900">New signature request</p>
+        <p class="mt-1 text-sm text-zinc-500">Create a draft signature request</p>
+        <p class="mt-2 text-xs text-zinc-400">
+          <code>pages/signature-requests/new</code> → <code>api/signature-requests</code>
+        </p>
+      </a>
+
+      <div class="rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-4">
+        <p class="font-medium text-zinc-900">Fields &amp; send</p>
+        <p class="mt-1 text-sm text-zinc-500">
+          Open a signature request from the list, then place fields and send.
+        </p>
+        <p class="mt-2 text-xs text-zinc-400">
+          <code>/signature-requests/[id]/fields</code> · <code>/signature-requests/[id]/send</code>
+        </p>
+      </div>
+
+      <a
+        href="/webhooks"
+        class="rounded-lg border border-zinc-200 bg-white p-4 no-underline shadow-sm transition hover:border-zinc-300"
+      >
+        <p class="font-medium text-zinc-900">Webhooks</p>
+        <p class="mt-1 text-sm text-zinc-500">Read-only delivery inbox</p>
+        <p class="mt-2 text-xs text-zinc-400">
+          <code>pages/webhooks.astro</code> → <code>api/webhooks/zsign.ts</code>
+        </p>
+      </a>
+    </div>
+  </div>
+</AppLayout>

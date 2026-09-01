@@ -1,4 +1,7 @@
-export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
+export async function fetchJson<T>(
+  path: string,
+  init: RequestInit = {},
+): Promise<T> {
   const headers = new Headers(init.headers);
   if (init.body && !(init.body instanceof FormData)) {
     if (!headers.has("Content-Type")) {
@@ -6,10 +9,7 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     }
   }
 
-  const res = await fetch(path, {
-    ...init,
-    headers,
-  });
+  const res = await fetch(path, { ...init, headers });
   const text = await res.text();
   let json: unknown = null;
   try {

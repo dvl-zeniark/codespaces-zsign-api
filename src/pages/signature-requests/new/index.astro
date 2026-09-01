@@ -1,0 +1,12 @@
+---
+import AppLayout from "../../../layouts/AppLayout.astro";
+import { SignatureRequestForm } from "../../../components/SignatureRequestForm";
+
+export const prerender = false;
+
+const initialDocumentId = Astro.url.searchParams.get("documentId") ?? "";
+---
+
+<AppLayout title="New signature request">
+  <SignatureRequestForm client:load initialDocumentId={initialDocumentId} />
+</AppLayout>

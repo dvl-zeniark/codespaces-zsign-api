@@ -1,12 +1,12 @@
 import { useCallback, useState } from "react";
 
 type Props = {
-  offerId: string;
+  requestId: string;
 };
 
-export function PdfBurnPreview({ offerId }: Props) {
+export function PdfBurnPreview({ requestId }: Props) {
   const [stamp, setStamp] = useState(() => String(Date.now()));
-  const src = `/api/offers/${offerId}/preview?v=${stamp}`;
+  const src = `/api/signature-requests/${requestId}/preview?v=${stamp}`;
 
   const refresh = useCallback(() => {
     setStamp(String(Date.now()));
