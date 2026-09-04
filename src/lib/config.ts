@@ -10,6 +10,10 @@ const STAGING_API = "https://stg-zsign.zeniark.net";
  * StackBlitz preview) has no effect until the server restarts. Re-reading
  * the file on every call avoids that: a saved edit takes effect on the
  * next request.
+ *
+ * ZSIGN_API_BASE: .env.local wins when set (escape hatch for staging).
+ * Otherwise process.env (docker compose injects this from the codespaces
+ * folder suffix: -N -> api-featureN) then import.meta.env then staging.
  */
 export function readEnvLocal(): Record<string, string> {
   try {
@@ -25,6 +29,7 @@ export function getConfig() {
     apiKey: (fileEnv.ZSIGN_API_KEY || import.meta.env.ZSIGN_API_KEY || "").trim(),
     apiBase: (
       fileEnv.ZSIGN_API_BASE ||
+      process.env.ZSIGN_API_BASE ||
       import.meta.env.ZSIGN_API_BASE ||
       STAGING_API
     ).replace(/\/+$/, ""),

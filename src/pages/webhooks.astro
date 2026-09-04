@@ -2,6 +2,10 @@
 import AppLayout from "../layouts/AppLayout.astro";
 import { listWebhooks } from "../lib/inbox";
 
+// Must be on-demand: Astro.url.origin is the live host (Codespaces / Docker),
+// and the inbox is in-memory for this process — neither belongs in a static build.
+export const prerender = false;
+
 const events = listWebhooks();
 const webhookUrl = new URL("/api/webhooks/zsign", Astro.url.origin).href;
 ---
