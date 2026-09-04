@@ -68,9 +68,10 @@ Paste the signing secret into `.env.local` as `ZSIGN_WEBHOOK_SECRET`.
 The **Webhooks** page (`/webhooks`) shows the full endpoint URL for this running instance
 (derived from the request origin). Relative path: `POST /api/webhooks/zsign`.
 
-**Codespaces:** the app runs on port **4321** (`appPort` in `.devcontainer/devcontainer.json`).
-ZSign must reach a **public** URL — in the Codespaces **Ports** tab, set port **4321** visibility
-to **Public** (manual step; no `gh` CLI automation in the devcontainer).
+**Codespaces:** on attach, a **webhooks** terminal asks to make port **4321** Public (`y/N`).
+Yes → uses the Codespaces session token already in the environment (no login / PAT). No (or if
+the flip fails) → terminal prints: **Ports** tab → right-click **4321** → **Port Visibility** →
+**Public**.
 
 **Local `./dc.sh`:** use `http://localhost:5001/api/webhooks/zsign` for this API quickstart sample.
 

@@ -1,6 +1,9 @@
 {
   "name": "zsign-api-quickstart",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
   "appPort": [4321],
   "forwardPorts": [4321],
   "portsAttributes": {
@@ -15,6 +18,7 @@
   "postCreateCommand": "npm install && cp -n .env.example .env.local || true",
   "postAttachCommand": {
     "readme": "code README.md",
+    "webhooks": "bash .devcontainer/enable-webhook-port.sh",
     "dev": "npm run dev -- --host 0.0.0.0 --port 4321"
   }
 }
