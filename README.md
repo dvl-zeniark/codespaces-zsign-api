@@ -4,8 +4,9 @@ A small Astro app that calls the ZSign external API from your server — upload 
 document, create a signature request, place fields, send it, open the signer link.
 No iframe.
 
-> **Branch:** use **`main`** (default; same tip as `redocs`). The old SPA sample
-> lives on **`deprecated`** and is not maintained.
+> **Branches:** **`main`** = partner default (Codespaces “Create”). **`nightly`** =
+> in-progress sample work (agents / pre-release). **`deprecated`** = old SPA (not
+> maintained).
 
 ## Setup
 
